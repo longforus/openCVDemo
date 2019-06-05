@@ -15,8 +15,12 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                cppFlags ""
+                cFlags "-frtti -fexceptions -Werror -DANDROID -DSTDC_HEADERS  -Werror -mfpu=vfp -mfloat-abi=softfp -fno-short-enums"
+                cppFlags "-frtti -fexceptions -Werror -DANDROID -DSTDC_HEADERS  -Werror  -std=gnu++0x"
             }
+        }
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
         }
     }
     buildTypes {

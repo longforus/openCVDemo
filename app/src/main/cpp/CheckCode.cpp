@@ -34,10 +34,10 @@ void Check(JNIEnv *env, Mat image,vector<Mat>& result) {
 
     LOGD("灰度图");
 ////高斯平滑滤波
-    GaussianBlur(imageGray, imageGuussian, Size(3, 3),
-                 0);
+    GaussianBlur(imageGray, imageGuussian, Size(3, 3),0);
 ////imshow("高斯平衡滤波", imageGuussian); waitKey(15);		system("pause");
     LOGD("高斯平衡滤波");
+
 
 ////求得水平和垂直方向灰度图像的梯度差,使用Sobel算子
     Mat imageX16S, imageY16S;
@@ -58,41 +58,38 @@ void Check(JNIEnv *env, Mat image,vector<Mat>& result) {
     blur(imageSobelOut, imageSobelOut, Size(3, 3)
     );
     LOGD("均值滤波");
-//    return imageSobelOut;
+
 ////二值化
     Mat imageSobleOutThreshold;
     threshold(imageSobelOut, imageSobleOutThreshold,100, 255, CV_THRESH_BINARY);
     LOGD("二值化");
 
-////闭运算，填充条形码间隙
-    Mat element = getStructuringElement(1, Size(9, 9));
-    morphologyEx(imageSobleOutThreshold, imageSobleOutThreshold, MORPH_CLOSE, element
-    );
-    LOGD("闭运算");
 //
+//////闭运算，填充条形码间隙
+    Mat element = getStructuringElement(1, Size(2,2));
+//    morphologyEx(imageSobleOutThreshold, imageSobleOutThreshold, MORPH_CLOSE, element);
+//    LOGD("闭运算");
+
+
 //腐蚀，去除孤立的点
-    erode(imageSobleOutThreshold, imageSobleOutThreshold, element
-    );
+    erode(imageSobleOutThreshold, imageSobleOutThreshold, element);
+    erode(imageSobleOutThreshold, imageSobleOutThreshold, getStructuringElement(2, Size(2,2)));
     LOGD("腐蚀");
+    result.push_back(imageSobleOutThreshold);
+    return;
 
-
-//膨胀，填充条形码间空隙，根据核的大小，有可能需要2~3次膨胀操作
-    dilate(imageSobleOutThreshold, imageSobleOutThreshold, element);
-//    dilate(imageSobleOutThreshold, imageSobleOutThreshold, element
-//    );
-//    dilate(imageSobleOutThreshold, imageSobleOutThreshold, element
-//    );
-////dilate(imageSobleOutThreshold, imageSobleOutThreshold, element);
-////dilate(imageSobleOutThreshold, imageSobleOutThreshold, element);
-////dilate(imageSobleOutThreshold, imageSobleOutThreshold, element);
+//
+//
+////膨胀，填充条形码间空隙，根据核的大小，有可能需要2~3次膨胀操作
+    dilate(imageSobleOutThreshold, imageSobleOutThreshold, element,Point(-1,-1),5);
     LOGD("膨胀");
 
 
     vector<vector<Point>> contours;
     vector<Vec4i> hiera;
 
+
     findContours(imageSobleOutThreshold, contours, hiera, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-//    result = vector(contours.size());
     for (const auto &contour : contours) {
         Rect rect = boundingRect(contour);
         rectangle(image, rect, Scalar(255), 2);
