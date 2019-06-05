@@ -55,43 +55,51 @@ void Check(JNIEnv *env, Mat image,vector<Mat>& result) {
 ////LOGD("XY方向梯度差", imageSobelOut); waitKey(15);		system("pause");
 //
 ////均值滤波，消除高频噪声
-    blur(imageSobelOut, imageSobelOut, Size(3, 3)
-    );
+    blur(imageSobelOut, imageSobelOut, Size(3, 3));
     LOGD("均值滤波");
-
+    result.push_back(imageSobelOut);
 ////二值化
     Mat imageSobleOutThreshold;
-    threshold(imageSobelOut, imageSobleOutThreshold,100, 255, CV_THRESH_BINARY);
+    threshold(imageSobelOut, imageSobleOutThreshold,121, 255, CV_THRESH_BINARY);
     LOGD("二值化");
+    result.push_back(imageSobleOutThreshold);
 
+    Mat imagemorphologyEx;
 //
 //////闭运算，填充条形码间隙
-    Mat element = getStructuringElement(1, Size(2,2));
-//    morphologyEx(imageSobleOutThreshold, imageSobleOutThreshold, MORPH_CLOSE, element);
-//    LOGD("闭运算");
-
-
+    Mat element = getStructuringElement(1, Size(8,8));
+    morphologyEx(imageSobleOutThreshold, imagemorphologyEx, MORPH_CLOSE, element);
+    LOGD("闭运算");
+    result.push_back(imagemorphologyEx);
 //腐蚀，去除孤立的点
-    erode(imageSobleOutThreshold, imageSobleOutThreshold, element);
-    erode(imageSobleOutThreshold, imageSobleOutThreshold, getStructuringElement(2, Size(2,2)));
+    Mat imageerode;
+    erode(imagemorphologyEx, imageerode, getStructuringElement(2, Size(2,4)),Point(-1,-1),2);
     LOGD("腐蚀");
-    result.push_back(imageSobleOutThreshold);
-    return;
+    result.push_back(imageerode);
+
+
+    Mat imagedilate;
+    ////膨胀，填充条形码间空隙，根据核的大小，有可能需要2~3次膨胀操作
+    dilate(imageerode, imagedilate, getStructuringElement(0, Size(20,10)),Point(-1,-1),5);
+    LOGD("膨胀");
+    result.push_back(imagedilate);
+
 
 //
 //
-////膨胀，填充条形码间空隙，根据核的大小，有可能需要2~3次膨胀操作
-    dilate(imageSobleOutThreshold, imageSobleOutThreshold, element,Point(-1,-1),5);
-    LOGD("膨胀");
 
 
     vector<vector<Point>> contours;
     vector<Vec4i> hiera;
 
 
-    findContours(imageSobleOutThreshold, contours, hiera, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+
+    findContours(imagedilate, contours, hiera, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
     for (const auto &contour : contours) {
         Rect rect = boundingRect(contour);
+        if (rect.height < 150 ||(rect.height * 2.5) > rect.width){
+            continue;
+        }
         rectangle(image, rect, Scalar(255), 2);
         Mat ROI = image(rect);
         result.push_back(ROI);

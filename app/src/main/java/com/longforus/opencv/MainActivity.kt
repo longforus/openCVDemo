@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         // Example of a call to a native method
         sample_text.text = stringFromJNI()
         btn_start.setOnClickListener {
-            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.tm)
+            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.tm2_meitu_1)
             val idArea = JniMethod.getIdArea(bitmap, Bitmap.Config.ARGB_8888)
             rv.adapter = BitMapAdapter(idArea.toList(),this@MainActivity)
         }
