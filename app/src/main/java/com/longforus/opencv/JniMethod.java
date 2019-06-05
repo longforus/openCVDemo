@@ -8,5 +8,5 @@ import android.graphics.Bitmap;
  * @date 2019-06-04  22:15
  */
 public class JniMethod {
-    public static native Bitmap getIdArea(Bitmap bitmap, Bitmap.Config config);
+    public static native Bitmap[] getIdArea(Bitmap bitmap, Bitmap.Config config);
 }
