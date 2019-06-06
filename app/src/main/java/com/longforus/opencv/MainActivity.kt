@@ -3,6 +3,7 @@ package com.longforus.opencv
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -19,7 +20,10 @@ class MainActivity : AppCompatActivity() {
         btn_start.setOnClickListener {
             val bitmap = BitmapFactory.decodeResource(resources, R.drawable.tm2_meitu_1)
             val idArea = JniMethod.getIdArea(bitmap, Bitmap.Config.ARGB_8888)
-            rv.adapter = BitMapAdapter(idArea.toList(),this@MainActivity)
+            for (s in idArea) {
+                Log.i(TAG,s ?: "null")
+            }
+//            rv.adapter = BitMapAdapter(idArea.toList(),this@MainActivity)
         }
 
     }

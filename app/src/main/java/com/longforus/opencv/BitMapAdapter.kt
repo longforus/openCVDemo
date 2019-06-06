@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
  */
 class BitMapAdapter(var data:List<Bitmap>,val context:Context) :RecyclerView.Adapter<ViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        String()
         return ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_code,parent,false))
     }
 
