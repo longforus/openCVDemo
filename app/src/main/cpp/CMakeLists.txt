@@ -6,8 +6,10 @@ add_library(OpenCV SHARED ${my_source_path})
 
 #添加动态库
 add_library(lib_opencv SHARED IMPORTED)
+add_library(lib_zbarjni SHARED IMPORTED)
 #设置lib_opencv动态库的真实地址
 set_target_properties(lib_opencv PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libopencv_java4.so)
+set_target_properties(lib_zbarjni PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libzbarjni.so)
 
 find_library(log-lib
         log
@@ -22,4 +24,5 @@ target_link_libraries(
         ${log-lib}
         ${jnigraphics-lib}
         lib_opencv
+        lib_zbarjni
 )
